@@ -36,17 +36,34 @@ grad = zeros(size(theta));
 %           grad = grad + YOUR_CODE_HERE (using the temp variable)
 %
 
+% Wrong code=================================================================================
+% I haven't found the wrong place yet
+%h_function = sigmoid(X * theta);
+%J = sum(( (-y) .* log(h_function)-(1-y) .* log(1 - h_function))) / m ; % Calculate the J of nonregulation cost funciton
 
+% Make the adjust matrix to avid the theta0
 
+%adjust_theta = theta;
+%adjust_theta(1) = 0;
 
+% Make the adjust matrix to avid the theta0
 
+%J = J + sum(adjust_theta .^2) * lambda /( 2 * m ); % Calculate the regulation cost function
 
+%h_y_sub = h_function - y;
+%normal_grad = sum(h_y_sub .* X) ./ m ;
+%grad = normal_grad .+ ((adjust_theta' .* lambda) ./ m); 
 
+% Wrong code=================================================================================
 
+without0 = theta(2:size(theta));
 
+h = sigmoid(X * theta);
+J = (1/m) * ((-y') * log(h) - (1-y)' * log(1-h)) + lambda/(2*m) * sum(without0.^2);
+temp = ones(size(theta),1);
+temp(1,1) = 0;
+grad = (X' * (h-y) + lambda.*theta.*temp) ./ m;
 
 % =============================================================
-
-grad = grad(:);
 
 end
