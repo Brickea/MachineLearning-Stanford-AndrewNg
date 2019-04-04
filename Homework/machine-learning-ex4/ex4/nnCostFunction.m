@@ -62,26 +62,55 @@ Theta2_grad = zeros(size(Theta2));
 %               and Theta2_grad from Part 2.
 %
 
+% -------------Calculate the cost function------------------------
+a1 = [ones(m,1) X];
+
+z2 = a1 * Theta1';  % z2 5000 X 25
+a2 = [ones(m,1) sigmoid(z2)];   % a2 5000 X 26
 
 
+z3 = a2 * Theta2';  % z3 5000 X 10
+a3 = sigmoid(z3);   % a3 is h 5000 X 10 
 
+for i = 1:num_labels,
+    temp_y = (y == i); % get the Yk for every num_labels
+    J = J + sum( (-temp_y).*log(a3(:,i))-(1-temp_y).*log(1-a3(:,i)) )/m;   % J without regularization
+end;    % You must remember every for has a end!!!!!!!!!!!!!!!!!!!!!!!!!!!! I spend a whole day to figure out where the problem is
 
+Theta1_without0 = Theta1(:,2:size(Theta1,2));  % regularization need to sub the theta bias
+Theta2_without0 = Theta2(:,2:size(Theta2,2));
 
+J = J + lambda/2/m * (sum(sum(Theta1_without0.^2)) + sum(sum(Theta2_without0.^2)));
 
+% -------------Calculate the gradients for every layer units-----------------
 
+yk=zeros(m,num_labels);
+for i=1:m
+    yk(i,y(i))=1;
+end
 
+for ex=1:m
+    a1=[1 X(ex,:)]; % 1 X 401
+    a1=a1'; % 401 X 1
+    z2=Theta1*a1;   % 25 X 1
+    a2=[1;sigmoid(z2)]; % 26 X 1
+    z3=Theta2*a2;   % 10 X 1
+    a3=sigmoid(z3);
+    y=yk(ex,:); % 1 X 10
+    delta3=a3-y';   % 10 X 1
+    % In here we need to avoid the delta2(1,0) so we just dont calculate it
+    delta2 = Theta2(:,2:end)' * delta3 .* sigmoidGradient(z2);  % delta2 is a 25x1 column vector 
+    Theta1_grad = Theta1_grad + delta2 * a1';   % 25 X 401
+    Theta2_grad = Theta2_grad + delta3 * a2';   % 10 X 26
+end
 
+Theta1_grad=Theta1_grad ./ m;
+Theta2_grad=Theta2_grad ./ m;
 
-
-
-
-
-
-
-
-
-% -------------------------------------------------------------
-
+Theta1(:,1) = 0;
+Theta2(:,1) = 0;
+Theta1_grad = Theta1_grad + lambda / m * Theta1;
+Theta2_grad = Theta2_grad + lambda / m * Theta2;
 % =========================================================================
 
 % Unroll gradients
