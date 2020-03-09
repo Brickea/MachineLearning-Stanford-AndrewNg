@@ -5,7 +5,7 @@ BRICKEA
 
 Learning notes
 
-As for personal use
+Only for personal use
 
 ---
 
